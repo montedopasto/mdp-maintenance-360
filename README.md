@@ -25,7 +25,7 @@ Os dados e intervalos são fictícios, a data de referência da inteligência é
 3. O workflow incluído executa os testes e publica apenas index.html, app.js, model.js e style.css; não publica documentação, testes ou backend.
 4. Os caminhos relativos e a navegação por fragmentos suportam URLs de projeto, como /mdp-maintenance-360/.
 
-Não foi criado nem publicado um repositório GitHub nesta entrega. Não foram fornecidos repositório de destino, contas ou credenciais. A integração real depende da configuração abaixo. As fontes Google Fonts são opcionais; sem rede são usadas fontes locais.
+Repositório: https://github.com/montedopasto/mdp-maintenance-360. GitHub Pages configurado com publicação automática pelo workflow incluído. Aplicação: https://montedopasto.github.io/mdp-maintenance-360/. Consultar o estado de cada publicação no separador Actions. A integração real depende da configuração abaixo. As fontes Google Fonts são opcionais; sem rede são usadas fontes locais.
 
 ## Arquitetura planeada e limites
 
