@@ -2,7 +2,7 @@
 const DATABASE_ID_ = 'CONFIGURAR_ID_DA_FOLHA';
 const OWNER_EMAIL_ = 'CONFIGURAR_EMAIL_PROPRIETARIO';
 const SCHEMA_ = {
- Equipamentos: ['id','name','zone','status','interval','last','version','updatedAt'],
+ Equipamentos: ['id','name','zone','status','interval','last','version','updatedAt','parentId'],
  Intervencoes: ['id','equipment','date','type','fault','description','cost','hours','technician','status','version','createdAt','updatedAt','requestId'],
  Auditoria: ['id','timestamp','actor','action','entity','entityId','requestId']
 };
@@ -45,9 +45,9 @@ function getSnapshot() {
 }
 function createEquipment(input) {
  const actor=authorized_();
- const record={id:text_(input.requestId,'identificador do pedido',80),name:text_(input.name,'designação',120),zone:text_(input.zone,'localização',120),status:oneOf_(input.status,['Operacional','Em manutenção','Inativo']),interval:input.interval===undefined||input.interval===null||input.interval===''?'':number_(input.interval,'intervalo',3650),last:date_(input.last,true),version:1,updatedAt:new Date().toISOString()};
+ const record={id:text_(input.requestId,'identificador do pedido',80),name:text_(input.name,'designação',120),zone:input.zone?text_(input.zone,'localização',120):'',status:oneOf_(input.status,['Operacional','Em manutenção','Inativo']),interval:input.interval===undefined||input.interval===null||input.interval===''?'':number_(input.interval,'intervalo',3650),last:date_(input.last,true),parentId:input.parentId?text_(input.parentId,'elemento superior',80):'',version:1,updatedAt:new Date().toISOString()};
  if(record.interval!==''&&(!Number.isInteger(record.interval)||record.interval<1))throw new Error('Intervalo deve ser um número inteiro de dias.');
- return locked_(()=>{const db=database_();const existing=read_(db,'Equipamentos').find(r=>r.id===record.id);if(existing)return existing;sheet_(db,'Auditoria');append_(db,'Equipamentos',record);audit_(db,actor,'create','Equipamentos',record.id,'');SpreadsheetApp.flush();return record;});
+ return locked_(()=>{const db=database_();const items=read_(db,'Equipamentos');const existing=items.find(r=>r.id===record.id);if(existing)return existing;validateParent_(items,record.id,record.parentId);if(!record.zone&&record.parentId){const parent=items.find(r=>r.id===record.parentId);record.zone=parent.zone||parent.name;}sheet_(db,'Auditoria');append_(db,'Equipamentos',record);audit_(db,actor,'create','Equipamentos',record.id,'');SpreadsheetApp.flush();return record;});
 }
 function createIntervention(input) {
  const actor=authorized_(),requestId=text_(input.requestId,'identificador do pedido',80);
@@ -63,3 +63,13 @@ function updateInterventionStatus(input) {
 }
 function doGet() {authorized_();return HtmlService.createHtmlOutput(consoleHtml_()).setTitle('MDP Maintenance 360 · Dados reais').addMetaTag('viewport','width=device-width, initial-scale=1');}
 function consoleHtml_() {return CONSOLE_HTML_;}
+
+function validateParent_(items,id,parentId) {
+ const byId=new Map(items.map(r=>[r.id,r])),seen=new Set([id]);let cursor=parentId;
+ while(cursor){if(seen.has(cursor))throw new Error('A hierarquia não pode conter ciclos.');seen.add(cursor);const parent=byId.get(cursor);if(!parent)throw new Error('Elemento superior inexistente.');cursor=parent.parentId||'';}
+}
+function updateEquipmentParent(input) {
+ const actor=authorized_(),parentId=input.parentId?text_(input.parentId,'elemento superior',80):'';
+ return locked_(()=>{const db=database_(),items=read_(db,'Equipamentos'),record=items.find(r=>r.id===input.id);if(!record)throw new Error('Equipamento inexistente.');if(Number(record.version)!==input.version)throw new Error('Registo alterado por outra sessão. Atualize os dados.');validateParent_(items,record.id,parentId);
+ const sheet=sheet_(db,'Equipamentos'),ids=sheet.getRange(2,1,sheet.getLastRow()-1,1).getValues(),index=ids.findIndex(r=>r[0]===record.id)+2;record.parentId=parentId;record.version++;record.updatedAt=new Date().toISOString();sheet_(db,'Auditoria');sheet.getRange(index,1,1,SCHEMA_.Equipamentos.length).setValues([SCHEMA_.Equipamentos.map(k=>cell_(record[k]===undefined?'':record[k]))]);audit_(db,actor,'reparent','Equipamentos',record.id,'');SpreadsheetApp.flush();return record;});
+}
