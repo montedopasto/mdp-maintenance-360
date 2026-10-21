@@ -40,3 +40,5 @@ Base própria criada e privada. Leitura e gravação confirmadas no Apps Script;
 Utilizador+PIN, SharePoint, Bovironda e a utilização da base real pelos sete módulos completos ainda não estão concluídos. O acesso privado Google é uma primeira etapa operacional; não substitui os perfis e sessões PIN planeados.
 
 O código reutilizável do backend está em `backend/apps-script/`, sem o email proprietário ou identificador da folha. A configuração concreta está apenas no projeto Apps Script privado. A consola usa `google.script.run`, evitando expor uma API de escrita anónima. Limite atual de 10 000 linhas por separador; rever capacidade e quotas antes de uso alargado. Escritas e auditoria usam bloqueio de script, mas Google Sheets não oferece transações entre separadores; falhas parciais exigem revisão da auditoria. Alterações diretas na folha não são auditadas pelo código da aplicação.
+
+O intervalo preventivo é opcional. Deixar em branco significa «Sem periodicidade definida» e não gera alertas de preventiva vencida. A última preventiva pode ser registada como informação histórica, mesmo sem periodicidade.

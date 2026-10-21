@@ -45,8 +45,8 @@ function getSnapshot() {
 }
 function createEquipment(input) {
  const actor=authorized_();
- const record={id:text_(input.requestId,'identificador do pedido',80),name:text_(input.name,'designação',120),zone:text_(input.zone,'localização',120),status:oneOf_(input.status,['Operacional','Em manutenção','Inativo']),interval:number_(input.interval,'intervalo',3650),last:date_(input.last,true),version:1,updatedAt:new Date().toISOString()};
- if(!Number.isInteger(record.interval)||record.interval<1)throw new Error('Intervalo deve ser um número inteiro de dias.');
+ const record={id:text_(input.requestId,'identificador do pedido',80),name:text_(input.name,'designação',120),zone:text_(input.zone,'localização',120),status:oneOf_(input.status,['Operacional','Em manutenção','Inativo']),interval:input.interval===undefined||input.interval===null||input.interval===''?'':number_(input.interval,'intervalo',3650),last:date_(input.last,true),version:1,updatedAt:new Date().toISOString()};
+ if(record.interval!==''&&(!Number.isInteger(record.interval)||record.interval<1))throw new Error('Intervalo deve ser um número inteiro de dias.');
  return locked_(()=>{const db=database_();const existing=read_(db,'Equipamentos').find(r=>r.id===record.id);if(existing)return existing;sheet_(db,'Auditoria');append_(db,'Equipamentos',record);audit_(db,actor,'create','Equipamentos',record.id,'');SpreadsheetApp.flush();return record;});
 }
 function createIntervention(input) {

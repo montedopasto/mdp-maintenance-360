@@ -4,3 +4,4 @@ test('planned and future repairs cannot create recurrence',()=>{assert.equal(ins
 test('recurrences outside 90 day window excluded',()=>assert.equal(insights(seed,[],'2027-10-21').filter(x=>x.kind==='Recorrência').length,0));
 test('completed preventive updates next due date',()=>{const rows=[...seed,{...seed[2],equipment:'EQ-004',date:'2026-10-20'}];assert.equal(insights(rows).filter(x=>x.kind==='Preventiva'&&x.equipment==='EQ-004').length,0)});
 test('validates costs and descriptions',()=>{assert(seed.every(validate));assert(!validate({...seed[0],cost:-1}));assert(!validate({...seed[0],description:' '}));assert(!validate({...seed[0],hours:NaN}))});
+test('no preventive due alerts without interval or reference date',()=>{for(const interval of [null,undefined,'',0])assert.equal(insights([], [{...equipment[0],interval}]).length,0);assert.equal(insights([], [{...equipment[0],last:''}]).length,0);});
