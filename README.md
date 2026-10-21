@@ -1,4 +1,4 @@
-# MDP Maintenance 360 · v0.2
+# MDP Maintenance 360 · v0.3
 
 Primeira versão funcional de demonstração, em português de Portugal, preparada para alojamento estático no GitHub Pages. Grafite, cinza claro e verde de inspiração Monte do Pasto; as cores e a marca tipográfica provisória não constituem identidade oficial validada.
 
@@ -43,8 +43,12 @@ O código reutilizável do backend está em `backend/apps-script/`, sem o email 
 
 O intervalo preventivo é opcional. Deixar em branco significa «Sem periodicidade definida» e não gera alertas de preventiva vencida. A última preventiva pode ser registada como informação histórica, mesmo sem periodicidade.
 
-## Estrutura hierárquica
+## Unidades e equipamentos · v0.3
 
-A consola privada apresenta equipamentos e instalações numa árvore expansível. O campo `parentId` identifica o elemento superior; vazio significa nível principal. Não há uma lista fixa de níveis. «Adicionar subelemento» preenche o superior no formulário; «Alterar superior» move o ramo preservando os identificadores, subelementos e histórico. O servidor rejeita superiores inexistentes e ciclos. O caminho completo é apresentado na seleção de equipamento e no histórico. A localização pode ser indicada manualmente ou copiada do superior na criação; alterações posteriores do superior não substituem localizações já guardadas. Os equipamentos existentes são conservados como principais até serem organizados explicitamente.
+Unidades são nós de localização, com identificador, nome e unidade superior. Podem ter vários níveis; não têm estado operacional nem periodicidade preventiva. Equipamentos são registos distintos, com designação e unidade obrigatórias, estado e manutenção preventiva opcional. Exemplo ilustrativo: unidade `EXTENSIVO > Herdade da Courela da Ruiva > Currais`, equipamento `Portões`. O exemplo não é carregado na base real.
 
-O formulário permite criar a cadeia no mesmo ecrã: superior de nível 1, superior de nível 2 e equipamento. Cada superior pode ser selecionado ou criado pelo botão correspondente sem apagar os campos do equipamento. O segundo superior é filtrado pelo primeiro. Nomes novos ainda preenchidos são criados em sequência ao guardar o equipamento; superiores já gravados permanecem disponíveis caso a gravação final falhe.
+A consola permite criar unidades em sequência, selecionar a unidade na árvore e associar equipamentos. A criação de uma unidade mantém o rascunho do equipamento. Intervenções são associadas apenas a equipamentos localizados. Mover uma unidade mantém os equipamentos ligados pelo identificador; o caminho apresentado é calculado a partir da árvore atual. O texto `zone` é uma cópia da localização no momento da gravação e não substitui a associação `unitId`.
+
+Registos do modelo antigo são conservados. A secção «Registos anteriores — classificar» permite converter explicitamente um registo em unidade ou associá-lo como equipamento a uma unidade. A conversão preserva a linha original, usando `recordType=unit`, e o identificador; os registos convertidos deixam de contar como equipamentos. Se houver intervenções associadas, a conversão é recusada para revisão. Não se infere o tipo ou a localização a partir de nomes. Não há eliminação nem classificação automática de dados reais.
+
+A folha privada acrescenta o separador Unidades e as colunas unitId/recordType em Equipamentos. A árvore de unidades é independente da lista de equipamentos. Registos antigos com parentId para uma unidade já classificada podem manter a associação anterior, sem alterar a origem.
