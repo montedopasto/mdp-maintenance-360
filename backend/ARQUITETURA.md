@@ -1,4 +1,10 @@
-# Contrato proposto · ainda não implementado
+# Estado da arquitetura · v0.2
+
+Implementado: Google Sheets próprio e privado, Apps Script associado e consola Google privada com criação de equipamentos, registo de intervenções, leitura e alteração de estado. A publicação GitHub Pages abre essa consola por ligação explícita e conserva os registos demo separados. Não existe API anónima nem segredo no frontend público.
+
+Ainda planeado: ligar os sete módulos completos à fonte real, utilizador+PIN e perfis, SharePoint e sincronização bidirecional Bovironda. A consola privada cobre a primeira etapa Sheets/Apps Script.
+
+# Contrato de evolução proposto
 
 Frontend GitHub Pages → serviço backend autenticado → Google Sheets próprio via Google Apps Script. O mesmo backend medeia o SharePoint e o Bovironda. Nenhuma credencial ou segredo é incluído no código estático. Não se usa Supabase nem API de IA paga.
 
