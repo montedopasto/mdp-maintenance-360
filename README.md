@@ -52,3 +52,8 @@ A consola permite criar unidades em sequência, selecionar a unidade na árvore 
 Registos do modelo antigo são conservados. A secção «Registos anteriores — classificar» permite converter explicitamente um registo em unidade ou associá-lo como equipamento a uma unidade. A conversão preserva a linha original, usando `recordType=unit`, e o identificador; os registos convertidos deixam de contar como equipamentos. Se houver intervenções associadas, a conversão é recusada para revisão. Não se infere o tipo ou a localização a partir de nomes. Não há eliminação nem classificação automática de dados reais.
 
 A folha privada acrescenta o separador Unidades e as colunas unitId/recordType em Equipamentos. A árvore de unidades é independente da lista de equipamentos. Registos antigos com parentId para uma unidade já classificada podem manter a associação anterior, sem alterar a origem.
+
+### Periodicidade por tarefa
+A consola privada tem o separador **Tarefas preventivas** e o botão **Gerir tarefas** em cada equipamento. Cada tarefa guarda equipamento, designação, periodicidade opcional em dias, primeira/próxima execução e última execução. Concluir uma tarefa calcula apenas a próxima data dessa tarefa, a partir da data efetiva de execução; sem periodicidade, a tarefa fica concluída sem nova data. As execuções são registadas na auditoria; ainda não geram automaticamente intervenções com custos.
+
+O separador Google Sheets `Tarefas` tem os cabeçalhos `id,equipment,name,interval,nextDate,last,version,updatedAt`. As colunas antigas `interval` e `last` de Equipamentos permanecem apenas por compatibilidade e não definem planos nem alertas. Novos equipamentos deixam esses campos vazios. Não foram criadas tarefas automaticamente a partir dos equipamentos importados.

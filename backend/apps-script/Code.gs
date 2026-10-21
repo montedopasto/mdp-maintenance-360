@@ -2,6 +2,7 @@
 const DATABASE_ID_ = 'CONFIGURAR_ID_DA_FOLHA';
 const OWNER_EMAIL_ = 'CONFIGURAR_EMAIL_PROPRIETARIO';
 const SCHEMA_ = {
+ Tarefas: ['id','equipment','name','interval','nextDate','last','version','updatedAt'],
  Unidades: ['id','name','parentId','version','updatedAt'],
  Equipamentos: ['id','name','zone','status','interval','last','version','updatedAt','parentId','unitId','recordType'],
  Intervencoes: ['id','equipment','date','type','fault','description','cost','hours','technician','status','version','createdAt','updatedAt','requestId'],
@@ -45,14 +46,14 @@ function equipmentForUnits_(db,units) {
  const ids=new Set(units.map(r=>r.id));return read_(db,'Equipamentos').filter(r=>r.recordType!=='unit').map(r=>({...r,unitId:r.unitId||(ids.has(r.parentId)?r.parentId:'')}));
 }
 function getSnapshot() {
- authorized_();return locked_(()=>{const db=database_(),units=read_(db,'Unidades');return {units,equipment:equipmentForUnits_(db,units),interventions:read_(db,'Intervencoes'),mode:'real',time:new Date().toISOString()};});
+ authorized_();return locked_(()=>{const db=database_(),units=read_(db,'Unidades');return {units,equipment:equipmentForUnits_(db,units),interventions:read_(db,'Intervencoes'),tasks:read_(db,'Tarefas'),mode:'real',time:new Date().toISOString()};});
 }
 function requireUnit_(units,id){if(!units.some(r=>r.id===id))throw new Error('Selecione uma unidade existente para localizar o equipamento.');}
 function unitPath_(units,id){const byId=new Map(units.map(r=>[r.id,r])),parts=[],seen=new Set();let cursor=id;while(cursor){if(seen.has(cursor))throw new Error('A hierarquia não pode conter ciclos.');seen.add(cursor);const row=byId.get(cursor);if(!row)throw new Error('Unidade inexistente.');parts.unshift(row.name);cursor=row.parentId||'';}return parts.join(' > ');}
 function createEquipment(input) {
  const actor=authorized_();
- const record={id:text_(input.requestId,'identificador do pedido',80),name:text_(input.name,'designação',120),zone:'',status:oneOf_(input.status,['Operacional','Em manutenção','Inativo']),interval:input.interval===undefined||input.interval===null||input.interval===''?'':number_(input.interval,'intervalo',3650),last:date_(input.last,true),parentId:'',unitId:text_(input.unitId,'unidade',80),recordType:'equipment',version:1,updatedAt:new Date().toISOString()};
- if(record.interval!==''&&(!Number.isInteger(record.interval)||record.interval<1))throw new Error('Intervalo deve ser um número inteiro de dias.');
+ const record={id:text_(input.requestId,'identificador do pedido',80),name:text_(input.name,'designação',120),zone:'',status:oneOf_(input.status,['Operacional','Em manutenção','Inativo']),interval:'',last:'',parentId:'',unitId:text_(input.unitId,'unidade',80),recordType:'equipment',version:1,updatedAt:new Date().toISOString()};
+
  return locked_(()=>{const db=database_(),items=read_(db,'Equipamentos');const existing=items.find(r=>r.id===record.id);if(existing){if(existing.recordType==='unit')throw new Error('Identificador já usado por uma unidade.');return existing;}const units=read_(db,'Unidades');requireUnit_(units,record.unitId);record.zone=unitPath_(units,record.unitId);sheet_(db,'Auditoria');append_(db,'Equipamentos',record);audit_(db,actor,'create','Equipamentos',record.id,'');SpreadsheetApp.flush();return record;});
 }
 function createUnit(input){const actor=authorized_(),record={id:text_(input.requestId,'identificador do pedido',80),name:text_(input.name,'nome da unidade',120),parentId:input.parentId?text_(input.parentId,'unidade superior',80):'',version:1,updatedAt:new Date().toISOString()};return locked_(()=>{const db=database_(),units=read_(db,'Unidades'),existing=units.find(r=>r.id===record.id);if(existing)return existing;validateParent_(units,record.id,record.parentId);sheet_(db,'Auditoria');append_(db,'Unidades',record);audit_(db,actor,'create','Unidades',record.id,'');SpreadsheetApp.flush();return record;});}
@@ -80,3 +81,6 @@ function validateParent_(items,id,parentId) {
  while(cursor){if(seen.has(cursor))throw new Error('A hierarquia não pode conter ciclos.');seen.add(cursor);const parent=byId.get(cursor);if(!parent)throw new Error('Elemento superior inexistente.');cursor=parent.parentId||'';}
 }
 function updateEquipmentParent(){authorized_();throw new Error('Os equipamentos associam-se a unidades. Atualize a aplicação e use a seleção de unidade.');}
+
+function createTask(input){const actor=authorized_(),interval=input.interval===''||input.interval===null||input.interval===undefined?'':number_(input.interval,'periodicidade',36500);if(interval!==''&&(!Number.isInteger(interval)||interval<1))throw new Error('Periodicidade deve ser um número inteiro positivo de dias.');const record={id:text_(input.requestId,'identificador',80),equipment:text_(input.equipment,'equipamento',80),name:text_(input.name,'tarefa',200),interval,nextDate:date_(input.nextDate),last:'',version:1,updatedAt:new Date().toISOString()};return locked_(()=>{const db=database_(),existing=read_(db,'Tarefas').find(r=>r.id===record.id);if(existing)return existing;if(!equipmentForUnits_(db,read_(db,'Unidades')).some(r=>r.id===record.equipment&&r.unitId))throw new Error('Equipamento inexistente.');sheet_(db,'Auditoria');append_(db,'Tarefas',record);audit_(db,actor,'create','Tarefas',record.id,'');SpreadsheetApp.flush();return record;});}
+function completeTask(input){const actor=authorized_(),date=date_(input.date);if(date>new Date().toISOString().slice(0,10))throw new Error('A execução não pode ter data futura.');return locked_(()=>{const db=database_(),record=read_(db,'Tarefas').find(r=>r.id===input.id);if(!record)throw new Error('Tarefa inexistente.');if(Number(record.version)!==input.version)throw new Error('Registo alterado por outra sessão. Atualize os dados.');if(record.last&&date<record.last)throw new Error('A data não pode anteceder a última execução.');sheet_(db,'Auditoria');record.last=date;record.nextDate=record.interval?new Date(Date.parse(date)+Number(record.interval)*86400000).toISOString().slice(0,10):'';record.version++;record.updatedAt=new Date().toISOString();writeRecord_(db,'Tarefas',record);audit_(db,actor,'complete:'+date,'Tarefas',record.id,'');SpreadsheetApp.flush();return record;});}
