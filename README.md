@@ -1,59 +1,35 @@
-# MDP Maintenance 360 · v0.3
+# MDP Maintenance 360
 
-Primeira versão funcional de demonstração, em português de Portugal, preparada para alojamento estático no GitHub Pages. Grafite, cinza claro e verde de inspiração Monte do Pasto; as cores e a marca tipográfica provisória não constituem identidade oficial validada.
+Aplicação única em português de Portugal, com dados privados em Google Sheets e backend Apps Script. O endereço GitHub Pages encaminha para a aplicação autenticada; já não apresenta uma demonstração paralela. `backend/apps-script/Console.html` contém a interface real e `Code.gs` os serviços do servidor. Os nomes dos ficheiros são internos; não há uma segunda consola para o utilizador.
 
-## Experimentar
+## Fluxo de utilização
 
-Na pasta do projeto executar `npm start` e abrir http://localhost:4173. Não abrir index.html diretamente: são usados módulos JavaScript. Sem dependências npm. Testes: `npm test` (Node 18+).
+O administrador gere unidades e equipamentos na Administração. Criar, editar, eliminar da operação e recuperar equipamentos são ações do mesmo ambiente. Eliminar preserva o histórico. Unidades só podem ser eliminadas quando vazias.
 
-## Funcionalidades disponíveis
+Em **Registar trabalho**, escolhe-se o equipamento, data, tipo (corretiva, preventiva, proativa, preditiva ou inspeção), estado, responsável, descrição, horas, custo, materiais, observações e periodicidade opcional em dias. Não se criam tarefas previamente. A periodicidade gera um plano associado ao próprio trabalho; uma nova execução pode selecionar esse trabalho recorrente. Cada plano é independente dos outros trabalhos do equipamento.
 
-- Dashboard com indicadores e distribuição de custos calculados a partir dos registos locais.
-- Registo rápido validado; equipamento, data, tipo, estado, responsável, categoria, custo, duração e descrição. Persistência em localStorage e aviso quando indisponível.
-- Calendário mensal navegável; consultar intervenções e alterar estado no detalhe.
-- Catálogo de quatro equipamentos fictícios e acesso ao respetivo histórico.
-- Relatórios: pesquisa, filtro de estado, exportação CSV e conclusões automáticas.
-- Administração: estado honesto das integrações e reposição da demonstração com confirmação.
-- MDP Intelligence: recorrência de 3 avarias iguais por equipamento em 90 dias; custos superiores a 2× a mediana de pelo menos dois registos anteriores do mesmo equipamento e tipo; manutenção periódica vencida. Regras locais, sem IA generativa, sem Supabase, sem APIs de IA pagas.
+Dashboard, Calendário, Equipamentos, Histórico e relatórios (CSV), MDP Intelligence e Administração usam os mesmos dados reais. A inteligência aplica regras locais explicáveis a trabalhos concluídos, custos e atrasos. Não usa APIs de IA.
 
-Os dados e intervalos são fictícios, a data de referência da inteligência é 21/10/2026. O dashboard mostra custos de todos os registos não planeados (não representa faturação). Estado operacional dos equipamentos é o da ficha demo; não é inferido das intervenções. As regras são apoio à decisão e precisam de validação técnica.
+## Limitações atuais
 
-## Publicação no GitHub Pages
+O acesso continua limitado à conta Google proprietária. Não há contas de técnicos nem utilizador+PIN implementados. Fotografias e anexos SharePoint e sincronização Bovironda permanecem por integrar. Não são simulados como funções concluídas.
 
-1. Colocar o conteúdo desta pasta na raiz do repositório pretendido, ramo `main`.
-2. Em Settings → Pages, escolher GitHub Actions como origem.
-3. O workflow incluído executa os testes e publica apenas index.html, app.js, model.js e style.css; não publica documentação, testes ou backend.
-4. Os caminhos relativos e a navegação por fragmentos suportam URLs de projeto, como /mdp-maintenance-360/.
+Não há dados de demonstração nem tarefas automaticamente sem registo de trabalho. Os antigos ficheiros model.js e respetivos testes apenas conservam o protótipo analítico; não são carregados pela aplicação publicada.
 
-Repositório: https://github.com/montedopasto/mdp-maintenance-360. GitHub Pages configurado com publicação automática pelo workflow incluído. Aplicação: https://montedopasto.github.io/mdp-maintenance-360/. Consultar o estado de cada publicação no separador Actions. A integração real depende da configuração abaixo. As fontes Google Fonts são opcionais; sem rede são usadas fontes locais.
+## Dados
 
-## Arquitetura planeada e limites
+- Unidades: `id,name,parentId,version,updatedAt`
+- Equipamentos: `id,name,zone,status,interval,last,version,updatedAt,parentId,unitId,recordType`. `interval` e `last` antigos não têm função operacional. `recordType=archived` retira o equipamento da lista ativa.
+- Intervencoes: `id,equipment,date,type,fault,description,cost,hours,technician,status,version,createdAt,updatedAt,requestId,taskId,interval,materials,notes`
+- Tarefas (planos originados em trabalhos): `id,equipment,name,interval,nextDate,last,version,updatedAt`
+- Auditoria: `id,timestamp,actor,action,entity,entityId,requestId`
 
-Consultar `backend/ARQUITETURA.md`. Existe agora um backend Google Apps Script e uma consola privada para equipamentos, intervenções e histórico. O botão «Abrir dados reais com Google» abre esse ambiente, limitado à conta Google proprietária. Os sete módulos do GitHub Pages continuam em demonstração local; ainda não usam automaticamente a base real. Qualquer pessoa com acesso ao URL público pode utilizar a demonstração. Não colocar informação de produção, credenciais ou PIN no frontend. Os registos locais não são partilhados entre dispositivos e podem ser perdidos ao limpar dados do navegador.
+Datas em ISO, valores numéricos em euros e horas. Mutação com identidade validada, bloqueio do servidor, controlo de versão e proteção de fórmulas na folha. Repetir uma submissão de trabalho não cria duplicados. Os equipamentos existentes são preservados.
 
-A conversa de origem foi consultada pelo identificador fornecido. Foram recuperados os pedidos sobre visual industrial, inteligência e ausência de APIs pagas. As respostas antigas surgem como marcadores sem texto e não há anexos disponíveis; requisitos adicionais dessas respostas não puderam ser recuperados. O âmbito implementado baseia-se no pedido atual e no conteúdo efetivamente acessível, sem presumir funcionalidades ou integrações concluídas.
+## Publicação
 
-## Ligação Google v0.2
+Configurar ID da folha e email proprietário apenas na cópia privada de Code.gs. Incorporar o HTML como `CONSOLE_HTML_`. Publicar no Apps Script mantendo «Apenas eu» enquanto o controlo de acesso de técnicos não existir. Nunca publicar credenciais ou dados operacionais no GitHub. GitHub Pages serve apenas a entrada para este mesmo ambiente.
 
-Base própria criada e privada. Leitura e gravação confirmadas no Apps Script; registos temporários removidos depois da verificação. A consola privada permite adicionar equipamentos, registar intervenções e alterar estados com controlo de versão. Nenhum registo fictício foi migrado. A auditoria conserva as operações de verificação identificadas como temporárias.
+## Verificação
 
-Utilizador+PIN, SharePoint, Bovironda e a utilização da base real pelos sete módulos completos ainda não estão concluídos. O acesso privado Google é uma primeira etapa operacional; não substitui os perfis e sessões PIN planeados.
-
-O código reutilizável do backend está em `backend/apps-script/`, sem o email proprietário ou identificador da folha. A configuração concreta está apenas no projeto Apps Script privado. A consola usa `google.script.run`, evitando expor uma API de escrita anónima. Limite atual de 10 000 linhas por separador; rever capacidade e quotas antes de uso alargado. Escritas e auditoria usam bloqueio de script, mas Google Sheets não oferece transações entre separadores; falhas parciais exigem revisão da auditoria. Alterações diretas na folha não são auditadas pelo código da aplicação.
-
-O intervalo preventivo é opcional. Deixar em branco significa «Sem periodicidade definida» e não gera alertas de preventiva vencida. A última preventiva pode ser registada como informação histórica, mesmo sem periodicidade.
-
-## Unidades e equipamentos · v0.3
-
-Unidades são nós de localização, com identificador, nome e unidade superior. Podem ter vários níveis; não têm estado operacional nem periodicidade preventiva. Equipamentos são registos distintos, com designação e unidade obrigatórias, estado e manutenção preventiva opcional. Exemplo ilustrativo: unidade `EXTENSIVO > Herdade da Courela da Ruiva > Currais`, equipamento `Portões`. O exemplo não é carregado na base real.
-
-A consola permite criar unidades em sequência, selecionar a unidade na árvore e associar equipamentos. A criação de uma unidade mantém o rascunho do equipamento. Intervenções são associadas apenas a equipamentos localizados. Mover uma unidade mantém os equipamentos ligados pelo identificador; o caminho apresentado é calculado a partir da árvore atual. O texto `zone` é uma cópia da localização no momento da gravação e não substitui a associação `unitId`.
-
-Registos do modelo antigo são conservados. A secção «Registos anteriores — classificar» permite converter explicitamente um registo em unidade ou associá-lo como equipamento a uma unidade. A conversão preserva a linha original, usando `recordType=unit`, e o identificador; os registos convertidos deixam de contar como equipamentos. Se houver intervenções associadas, a conversão é recusada para revisão. Não se infere o tipo ou a localização a partir de nomes. Não há eliminação nem classificação automática de dados reais.
-
-A folha privada acrescenta o separador Unidades e as colunas unitId/recordType em Equipamentos. A árvore de unidades é independente da lista de equipamentos. Registos antigos com parentId para uma unidade já classificada podem manter a associação anterior, sem alterar a origem.
-
-### Periodicidade por tarefa
-A consola privada tem o separador **Tarefas preventivas** e o botão **Gerir tarefas** em cada equipamento. Cada tarefa guarda equipamento, designação, periodicidade opcional em dias, primeira/próxima execução e última execução. Concluir uma tarefa calcula apenas a próxima data dessa tarefa, a partir da data efetiva de execução; sem periodicidade, a tarefa fica concluída sem nova data. As execuções são registadas na auditoria; ainda não geram automaticamente intervenções com custos.
-
-O separador Google Sheets `Tarefas` tem os cabeçalhos `id,equipment,name,interval,nextDate,last,version,updatedAt`. As colunas antigas `interval` e `last` de Equipamentos permanecem apenas por compatibilidade e não definem planos nem alertas. Novos equipamentos deixam esses campos vazios. Não foram criadas tarefas automaticamente a partir dos equipamentos importados.
+`npm test` verifica autorização, validação, histórico, versões, planos independentes, repetição de pedidos, arquivo/recuperação, nomes escapados, formulário de trabalho e navegação integrada.
