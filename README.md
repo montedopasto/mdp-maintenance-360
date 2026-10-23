@@ -33,3 +33,6 @@ O registo Office 365 foi criado e o fluxo de entrada foi implementado com MSAL. 
 ## Reinício
 
 A estrutura anterior não foi importada. O código anterior tem uma cópia de recuperação local na pasta de trabalho. Não foram apagados os dados do Google nem o SharePoint existente.
+
+## Correção do modelo de ligação
+A implementação segue as aplicações ISO Quality Control e Efetivo Bovinos existentes: MSAL no GitHub Pages e chamadas delegadas ao Microsoft Graph diretamente do navegador. Não exige um servidor Azure. O acesso fica limitado pelas permissões Microsoft do utilizador e pela autorização Sites.Selected para o novo site; o código cliente não substitui as permissões do SharePoint. O cliente de leitura está implementado, mas a autorização do novo site ainda não foi concedida. O acesso externo continua por configurar e não é simulado com palavras-passe guardadas numa lista.
