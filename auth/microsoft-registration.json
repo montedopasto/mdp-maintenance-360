@@ -1,0 +1,14 @@
+{
+  "displayName": "MDP Maintenance 360",
+  "clientId": "6153d512-a0ec-4af2-b449-ed2d0df148f4",
+  "objectId": "431872a2-ef91-4de4-a232-4864d574d724",
+  "tenantId": "ee417351-ea90-41e0-9147-5ea6ab38ea49",
+  "signInAudience": "AzureADMyOrg",
+  "platform": "spa",
+  "redirectUri": "https://montedopasto.github.io/mdp-maintenance-360/",
+  "registeredAt": "2026-10-23",
+  "registrationVerified": true,
+  "applicationLoginImplemented": false,
+  "sharePointAccessGranted": false,
+  "externalIdentityConfigured": false
+}

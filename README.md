@@ -28,7 +28,7 @@ Não há criação prévia obrigatória de tarefas. Se um trabalho for recorrent
 
 A aplicação pública não pode conter segredos nem credenciais do SharePoint. O servidor valida tokens e permissões de ambos os tipos de entrada e acede apenas ao novo site. Técnicos externos não são adicionados automaticamente como membros do SharePoint. As contas externas devem ser geridas num fornecedor de identidade protegido, através das ações administrativas da aplicação.
 
-Os registos Microsoft, fornecedor de identidade externa, serviço de servidor e autorizações ainda não estão configurados. Nenhuma integração é apresentada como concluída.
+O registo Office 365 foi criado e o fluxo de entrada foi implementado com MSAL. O fornecedor de identidade externa, serviço de servidor e autorizações ainda não estão configurados. A entrada Microsoft não concede um perfil nem acesso aos dados. Nenhuma integração é apresentada como concluída.
 
 ## Reinício
 
