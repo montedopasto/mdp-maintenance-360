@@ -1,0 +1,95 @@
+{
+  "siteId": "montedopastopt.sharepoint.com,f1a462c0-cd43-4a74-afcd-982432760474,ad66cacb-0a7e-443e-832b-85b99ae9bc4e",
+  "siteUrl": "https://montedopastopt.sharepoint.com/sites/MDPMaintenance360",
+  "checkedAt": "2026-10-23",
+  "resources": [
+    {
+      "id": "5e35f92b-95df-4108-a716-3dfdfa653e58",
+      "name": "wte",
+      "display_name": "Extensões de Modelos Web",
+      "description": "Esta lista armazena os resultados de execução da funcionalidade Extensões de Modelos Web.",
+      "web_url": "https://montedopastopt.sharepoint.com/sites/MDPMaintenance360/_catalogs/wte",
+      "list_info": {
+        "template": "webTemplateExtensionsList",
+        "hidden": true
+      }
+    },
+    {
+      "id": "b54f5716-ef45-47b7-ae1e-60b007e97fdf",
+      "name": "MDP_Utilizadores",
+      "display_name": "MDP_Utilizadores",
+      "description": "",
+      "web_url": "https://montedopastopt.sharepoint.com/sites/MDPMaintenance360/Lists/MDP_Utilizadores",
+      "list_info": {
+        "template": "genericList",
+        "hidden": false
+      }
+    },
+    {
+      "id": "0185090c-ca12-4893-a109-88643449cfae",
+      "name": "MDP_Equipamentos",
+      "display_name": "MDP_Equipamentos",
+      "description": "",
+      "web_url": "https://montedopastopt.sharepoint.com/sites/MDPMaintenance360/Lists/MDP_Equipamentos",
+      "list_info": {
+        "template": "genericList",
+        "hidden": false
+      }
+    },
+    {
+      "id": "3337eb79-6e46-479b-99b7-8941f5ee2e5d",
+      "name": "MDP_Trabalhos",
+      "display_name": "MDP_Trabalhos",
+      "description": "",
+      "web_url": "https://montedopastopt.sharepoint.com/sites/MDPMaintenance360/Lists/MDP_Trabalhos",
+      "list_info": {
+        "template": "genericList",
+        "hidden": false
+      }
+    },
+    {
+      "id": "9e954815-3688-432f-a880-8a4941b910a5",
+      "name": "Documentos Partilhados",
+      "display_name": "Documentos",
+      "description": "",
+      "web_url": "https://montedopastopt.sharepoint.com/sites/MDPMaintenance360/Documentos%20Partilhados",
+      "list_info": {
+        "template": "documentLibrary",
+        "hidden": false
+      }
+    },
+    {
+      "id": "c7444179-6347-40eb-b038-ea00d8fc9027",
+      "name": "MDP_Unidades",
+      "display_name": "MDP_Unidades",
+      "description": "",
+      "web_url": "https://montedopastopt.sharepoint.com/sites/MDPMaintenance360/Lists/MDP_Unidades",
+      "list_info": {
+        "template": "genericList",
+        "hidden": false
+      }
+    },
+    {
+      "id": "7f20ca8b-c5aa-4523-9eed-fbe0474aceef",
+      "name": "MDP_Auditoria",
+      "display_name": "MDP_Auditoria",
+      "description": "",
+      "web_url": "https://montedopastopt.sharepoint.com/sites/MDPMaintenance360/Lists/MDP_Auditoria",
+      "list_info": {
+        "template": "genericList",
+        "hidden": false
+      }
+    },
+    {
+      "id": "71e49ebe-f63b-47fb-9e14-ca0a67e47b49",
+      "name": "MDP_Documentos",
+      "web_url": "https://montedopastopt.sharepoint.com/sites/MDPMaintenance360/MDP_Documentos",
+      "list_info": {
+        "template": "documentLibrary",
+        "hidden": false
+      }
+    }
+  ],
+  "columnsApplied": false,
+  "applicationConnected": false
+}

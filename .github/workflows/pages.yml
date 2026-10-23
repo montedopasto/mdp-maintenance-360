@@ -1,4 +1,4 @@
-name: Publicar no GitHub Pages
+name: Publicar aplicação no GitHub Pages
 on:
   push:
     branches: [main]
@@ -22,10 +22,9 @@ jobs:
         with:
           node-version: '22'
       - run: npm test
-      - name: Preparar ficheiros públicos
-        run: |
+      - run: |
           mkdir -p dist
-          cp index.html app.js model.js config.js style.css dist/
+          cp index.html app.js style.css dist/
           touch dist/.nojekyll
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3

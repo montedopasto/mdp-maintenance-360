@@ -1,5 +1,4 @@
-import {REAL_APP_URL} from './config.js';
-// GitHub Pages is the entrance to the same private application; no parallel demo.
-const link=document.querySelector('#open-app');
-link.href=REAL_APP_URL;
-window.location.replace(REAL_APP_URL);
+// The complete interface is hosted on GitHub Pages. No redirect or embedded app.
+// Authentication stays disabled until the Microsoft identity and server setup is verified.
+const form=document.querySelector('#external-login');
+form.addEventListener('submit',event=>event.preventDefault());
