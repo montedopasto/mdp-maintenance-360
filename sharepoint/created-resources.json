@@ -90,7 +90,8 @@
       }
     }
   ],
-  "columnsApplied": false,
+  "columnsApplied": true,
   "applicationConnected": true,
-  "dataReadVerifiedAt": "2026-10-27"
+  "dataReadVerifiedAt": "2026-10-27",
+  "columnsVerifiedAt": "2026-10-27"
 }

@@ -1,38 +1,23 @@
-# MDP Maintenance 360 — nova base Microsoft
+# MDP Maintenance 360
 
-Arquitetura aprovada: interface no GitHub Pages, site SharePoint novo e exclusivo para os dados e documentos, entrada Office 365 e entrada externa com contas geridas pelo administrador na mesma aplicação. Sem Bovironda, Google Sheets ou Apps Script.
+Interface em português de Portugal no GitHub Pages, com entrada Microsoft e chamadas diretas ao Microsoft Graph em nome do utilizador. Segue o modelo das aplicações ISO Quality Control e Efetivo Bovinos existentes. Não depende de alojamento Azure, Google Sheets, Apps Script ou Bovironda.
 
-## SharePoint criado
+## Estado verificado em 27/10/2026
 
-- Nome: MDP Maintenance 360
-- Endereço: https://montedopastopt.sharepoint.com/sites/MDPMaintenance360
-- Privacidade: privado
-- Idioma escolhido na criação: Português (Portugal)
-- Criador/proprietário: conta Microsoft Monte do Pasto autenticada no navegador
-- Não foram adicionados outros membros durante a criação.
+- Site SharePoint privado criado: https://montedopastopt.sharepoint.com/sites/MDPMaintenance360
+- Cinco listas e biblioteca MDP_Documentos criadas.
+- 36 campos confirmados por consulta através da aplicação após criação administrativa.
+- Login Office 365 e leitura das listas verificados no navegador.
+- Sites.Selected delegada, com autorização write apenas para o site da manutenção.
+- Formulários ligados ao Graph: criar unidades em cadeia; criar e alterar equipamentos; retirar equipamentos da lista ativa preservando histórico; registar trabalhos.
+- Periodicidade opcional em dias pertence ao trabalho. O calendário acompanha a execução mais recente de cada série.
+- Fotografias JPEG/PNG/WebP: até 5 por trabalho, 10 MB por ficheiro, biblioteca exclusiva e metadados de ligação. Implementação verificada com respostas simuladas; envio real de fotografias ainda não verificado.
+- Histórico/exportação CSV e conclusões de recorrência/custo calculados a partir dos registos existentes. Sem dados ou conclusões fictícias e sem APIs de IA.
 
-## Modelo
+## Limitações
 
-`sharepoint/schema.json` define o esquema pretendido, incluindo campos que ainda precisam de ser aplicados às listas. A existência de uma lista vazia não significa que o esquema completo ou a integração da aplicação já estejam concluídos.
+O acesso externo e a criação/gestão de outros utilizadores continuam por configurar. Não existem contas externas nem credenciais em listas. O administrador inicial é o proprietário Microsoft que criou o site. A restrição visual da área administrativa não substitui as permissões do SharePoint: estas têm de ser configuradas para cada técnico antes de conceder acesso. Não foram importados equipamentos antigos nem criados registos de demonstração. Os percursos de gravação foram verificados com testes simulados; não foram criados trabalhos fictícios no ambiente real para os testar.
 
-- Unidades: hierarquia arbitrária de localização. Não são equipamentos.
-- Equipamentos: designação e unidade obrigatórias, estado e características. Não têm periodicidade preventiva.
-- Trabalhos: criados pelo técnico ao selecionar um equipamento. Data, tipo de manutenção, estado, responsável, descrição, horas, custo, peças/materiais, observações e periodicidade opcional em dias.
-- Documentos: fotografias e anexos ligados ao equipamento e, quando aplicável, ao trabalho.
-- Utilizadores: apenas identidade, nome, fornecedor de entrada e perfil/permissões. Sem palavras-passe, PIN ou hashes de credenciais nas listas.
-- Auditoria: ator, data, ação e registo afetado.
+## Desenvolvimento
 
-Não há criação prévia obrigatória de tarefas. Se um trabalho for recorrente, o registo e as execuções seguintes partilham `TrabalhoOrigemId`; só a execução relevante mais recente determina a próxima data.
-
-## Acesso
-
-A aplicação pública não pode conter segredos nem credenciais do SharePoint. O servidor valida tokens e permissões de ambos os tipos de entrada e acede apenas ao novo site. Técnicos externos não são adicionados automaticamente como membros do SharePoint. As contas externas devem ser geridas num fornecedor de identidade protegido, através das ações administrativas da aplicação.
-
-O registo Office 365 foi criado e o fluxo de entrada foi implementado com MSAL. O fornecedor de identidade externa, serviço de servidor e autorizações ainda não estão configurados. A entrada Microsoft não concede um perfil nem acesso aos dados. Nenhuma integração é apresentada como concluída.
-
-## Reinício
-
-A estrutura anterior não foi importada. O código anterior tem uma cópia de recuperação local na pasta de trabalho. Não foram apagados os dados do Google nem o SharePoint existente.
-
-## Correção do modelo de ligação
-A implementação segue as aplicações ISO Quality Control e Efetivo Bovinos existentes: MSAL no GitHub Pages e chamadas delegadas ao Microsoft Graph diretamente do navegador. Não exige um servidor Azure. O acesso fica limitado pelas permissões Microsoft do utilizador e pela autorização Sites.Selected para o novo site; o código cliente não substitui as permissões do SharePoint. O cliente de leitura está implementado, mas a autorização do novo site ainda não foi concedida. O acesso externo continua por configurar e não é simulado com palavras-passe guardadas numa lista.
+`npm ci`, `npm test`, `npm run build`. O ficheiro compilado app.js é produzido pelo workflow e não é a origem do código. `src/` contém a implementação. As chaves e palavras-passe nunca devem ser colocadas no repositório.
