@@ -91,5 +91,6 @@
     }
   ],
   "columnsApplied": false,
-  "applicationConnected": false
+  "applicationConnected": true,
+  "dataReadVerifiedAt": "2026-10-27"
 }
