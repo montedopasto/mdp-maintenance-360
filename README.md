@@ -12,6 +12,7 @@ Interface em português de Portugal no GitHub Pages, com entrada Microsoft e cha
 - Formulários ligados ao Graph: criar unidades em cadeia; criar e alterar equipamentos; retirar equipamentos da lista ativa preservando histórico; registar trabalhos.
 - Periodicidade opcional em dias pertence ao trabalho. O calendário acompanha a execução mais recente de cada série.
 - Fotografias JPEG/PNG/WebP: até 5 por trabalho, 10 MB por ficheiro, biblioteca exclusiva e metadados de ligação. Implementação verificada com respostas simuladas; envio real de fotografias ainda não verificado.
+- Importação de equipamentos CSV em UTF-8, com pré-visualização, criação das unidades em cadeia e omissão de repetidos. Não suporta XLSX nesta versão.
 - Histórico/exportação CSV e conclusões de recorrência/custo calculados a partir dos registos existentes. Sem dados ou conclusões fictícias e sem APIs de IA.
 
 ## Limitações
