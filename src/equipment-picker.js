@@ -10,11 +10,57 @@ export function equipmentSelection(units,equipment,selectedId=''){
  prefill(selectedId);
  return {get chain(){return [...chain];},get selected(){return selected;},options,available,chooseUnit,chooseEquipment,prefill};
 }
-export function mountEquipmentPicker(container,{units,equipment,selectedId=''}){
- const state=equipmentSelection(units,equipment,selectedId);
- function option(select,value,text){const node=document.createElement('option');node.value=value;node.textContent=text;select.append(node);}
- function render(){container.replaceChildren();const heading=document.createElement('h3');heading.textContent='Onde foi feito o trabalho?';container.append(heading);const hint=document.createElement('p');hint.className='muted';hint.textContent='Escolha a localização e siga a cadeia até ao equipamento.';container.append(hint);const grid=document.createElement('div');grid.className='form-grid';container.append(grid);
- for(let depth=0;depth<=state.chain.length;depth++){const choices=state.options(depth);if(!choices.length)break;const label=document.createElement('label');label.append(depth===0?'Localização':depth===1?'Unidade':depth===2?'Subunidade':`Subunidade (nível ${depth+1})`);const select=document.createElement('select');select.dataset.unitLevel=depth;option(select,'',depth===0?'Selecionar localização':state.chain[depth-1]&&state.available().length&&depth===state.chain.length?'Equipamentos desta unidade':'Selecionar unidade');for(const u of choices)option(select,id(u.id),u.fields.Title||'Sem designação');select.value=state.chain[depth]||'';select.addEventListener('change',()=>{state.chooseUnit(depth,select.value);render();const next=container.querySelector(`[data-unit-level="${depth+1}"]`)||container.querySelector('[name="EquipamentoId"]');next?.focus();});label.append(select);grid.append(label);if(!state.chain[depth])break;}
- const label=document.createElement('label');label.append('Equipamento');const select=document.createElement('select');select.name='EquipamentoId';select.required=true;select.disabled=!state.available().length;option(select,'',!state.chain.length?'Escolha primeiro a localização':!state.available().length?'Escolha a unidade seguinte':'Selecionar equipamento');for(const e of state.available())option(select,id(e.id),`${e.fields.Title}${e.fields.Codigo?' · '+e.fields.Codigo:''}`);select.value=state.selected;select.addEventListener('change',()=>{state.chooseEquipment(select.value);updatePath();});label.append(select);grid.append(label);const path=document.createElement('p');path.className='equipment-selection-path';path.setAttribute('role','status');container.append(path);function updatePath(){const parts=state.chain.map(unit=>units.find(u=>id(u.id)===unit)?.fields.Title||'Sem designação');if(state.selected)parts.push(equipment.find(e=>id(e.id)===state.selected)?.fields.Title);path.textContent=parts.length?parts.join(' › '):'Nenhum equipamento selecionado.';}updatePath();}
- render();return {setEquipment(value){state.prefill(value);render();}};
+export function mountEquipmentPicker(container,{units,equipment,selectedId='',recentIds=[]}){
+ const normalize=value=>String(value??'').normalize('NFD').replace(/\p{M}/gu,'').toLocaleLowerCase('pt-PT');
+ const state=equipmentSelection(units,equipment);
+ const titles=new Map(units.map(unit=>[id(unit.id),unit.fields.Title]));
+ const catalog=equipment.flatMap(item=>{
+  state.prefill(item.id);
+  if(!state.selected)return [];
+  const path=[...state.chain.map(key=>titles.get(key)),item.fields.Title].join(' › ');
+  return [{item,path,search:normalize([path,item.fields.Codigo].join(' '))}];
+ }).sort((a,b)=>a.path.localeCompare(b.path,'pt-PT'));
+ const byId=new Map(catalog.map(entry=>[id(entry.item.id),entry]));
+ const recent=[...new Set(recentIds.map(id))].map(key=>byId.get(key)).filter(Boolean).slice(0,5);
+ container.innerHTML='<label>Pesquisar equipamento<input type="search" placeholder="Ex.: quadros monforte" autocomplete="off"></label><input type="hidden" name="EquipamentoId"><p class="equipment-selection-path" role="status"></p><div class="equipment-results"></div>';
+ const search=container.querySelector('input[type=search]');
+ const field=container.querySelector('[name=EquipamentoId]');
+ const path=container.querySelector('.equipment-selection-path');
+ const results=container.querySelector('.equipment-results');
+ function select(value){
+  const entry=byId.get(id(value));
+  field.value=entry?id(value):'';
+  path.textContent=entry?entry.path:'';
+  search.value='';
+  renderResults();
+  field.dispatchEvent(new Event('change',{bubbles:true}));
+ }
+ function renderResults(){
+  results.replaceChildren();
+  const terms=normalize(search.value).trim().split(/\s+/).filter(Boolean);
+  const matches=terms.length?catalog.filter(entry=>terms.every(term=>entry.search.includes(term))):field.value?[]:recent;
+  if(terms.length||matches.length){
+   const hint=document.createElement('p');
+   hint.textContent=terms.length?(matches.length>12?'Mostram-se 12 resultados. Refine a pesquisa.':matches.length?'Resultados':'Nenhum equipamento encontrado.'):'Equipamentos recentes';
+   results.append(hint);
+  }
+  for(const entry of matches.slice(0,12)){
+   const button=document.createElement('button');
+   button.type='button';
+   button.textContent=[entry.path,entry.item.fields.Codigo].filter(Boolean).join(' · ');
+   button.onclick=()=>{
+    select(entry.item.id);
+    container.closest('form')?.elements.namedItem('Descricao')?.focus();
+   };
+   results.append(button);
+  }
+ }
+ search.addEventListener('input',renderResults);
+ search.addEventListener('keydown',event=>{
+  if(event.key!=='Enter')return;
+  event.preventDefault();
+  results.querySelector('button')?.focus();
+ });
+ select(selectedId);
+ return {setEquipment:select};
 }
